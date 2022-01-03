@@ -1,4 +1,5 @@
 import os
+import typing
 
 import typer
 
@@ -7,8 +8,28 @@ app = typer.Typer(
 )
 
 
+def generate_options(
+    name: str,
+    short_name: str = None,
+) -> typing.Tuple[str, str, str, str]:
+    return (
+        f"--{name}",
+        f"-{short_name or name[0]}",
+        f"--no-{name}",
+        f"-no-{short_name or name[0]}",
+    )
+
+
+build_option = typer.Option(
+    False,
+    *generate_options("build"),
+)
+
+
 @app.command()
-def up(build: bool = False):
+def up(
+    build: bool = build_option,
+):
     options = ""
     if build:
         options = f"{options} --build"
@@ -21,20 +42,22 @@ def down():
     os.system("docker-compose down")
 
 
-@app.command()
-def reset(build: bool = False):
+@app.command(help="down && up")
+def reset(
+    build: bool = build_option,
+):
     down()
     up(build)
 
 
-@app.command(name="rx")
+@app.command(
+    name="rx",
+    help="stop && rm && system prune",
+)
 def remove_containers(
     system_prune: bool = typer.Option(
-        False,
-        "--prune",
-        "-p",
-        "--no-prune",
-        "-no-p",
+        True,
+        *generate_options("prune"),
     )
 ):
     typer.echo("Stopping containers.")
@@ -42,20 +65,19 @@ def remove_containers(
     typer.echo("Removing containers.")
     os.system("docker rm $(docker ps -aq)")
     if system_prune:
-        prune()
+        prune(everything=False)
 
 
-@app.command(name="px", help="prune")
+@app.command(
+    name="px",
+    help="prune",
+)
 def prune(
     everything: bool = typer.Option(
-        True,
-        "--all",
-        "-a",
-        "--no-all",
-        "-no-a",
+        False,
+        *generate_options("all"),
     )
 ):
-    typer.echo(everything)
     options = ""
     if everything:
         options = f"{options} --all"
