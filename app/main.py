@@ -27,8 +27,46 @@ def reset(build: bool = False):
     up(build)
 
 
+@app.command(name="rx")
+def remove_containers(
+    system_prune: bool = typer.Option(
+        False,
+        "--prune",
+        "-p",
+        "--no-prune",
+        "-no-p",
+    )
+):
+    typer.echo("Stopping containers.")
+    os.system("docker stop $(docker ps -aq)")
+    typer.echo("Removing containers.")
+    os.system("docker rm $(docker ps -aq)")
+    if system_prune:
+        prune()
+
+
+@app.command(name="px", help="prune")
+def prune(
+    everything: bool = typer.Option(
+        True,
+        "--all",
+        "-a",
+        "--no-all",
+        "-no-a",
+    )
+):
+    typer.echo(everything)
+    options = ""
+    if everything:
+        options = f"{options} --all"
+    os.system(f"docker system prune{options}")
+    if everything:
+        os.system(f"docker volume prune")
+
+
 app.command(name="u")(up)
 app.command(name="d")(down)
 app.command(name="r")(reset)
+
 if __name__ == "__main__":
     app()
