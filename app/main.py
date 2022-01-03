@@ -70,12 +70,11 @@ def remove_containers(
 
 @app.command(
     name="px",
-    help="prune",
+    help="system prune",
 )
 def prune(
     everything: bool = typer.Option(
-        False,
-        *generate_options("all"),
+        False, *generate_options("all"), help="Prune all and prune volumes."
     )
 ):
     options = ""
@@ -86,9 +85,9 @@ def prune(
         os.system(f"docker volume prune")
 
 
-app.command(name="u")(up)
-app.command(name="d")(down)
-app.command(name="r")(reset)
+app.command(name="u", help="Alias for `up`")(up)
+app.command(name="d", help="Alias for `down`")(down)
+app.command(name="r", help="Alias for `reset`")(reset)
 
 if __name__ == "__main__":
     app()
