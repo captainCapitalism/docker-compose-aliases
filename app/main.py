@@ -85,9 +85,19 @@ def prune(
         os.system(f"docker volume prune")
 
 
+@app.command(
+    name="exec",
+    help='Exec into container with "bin/bash"',
+)
+def exec_into(container: str):
+    command = "docker-compose exec {container} /bin/bash"
+    os.system(command.format(container=container))
+
+
 app.command(name="u", help="Alias for `up`")(up)
 app.command(name="d", help="Alias for `down`")(down)
 app.command(name="r", help="Alias for `reset`")(reset)
+app.command(name="ex", help="Alias for exec")(exec_into)
 
 if __name__ == "__main__":
     app()

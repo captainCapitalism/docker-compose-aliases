@@ -27,7 +27,7 @@ dx u
 ```
 2. Customize names or commands content. You can read short introduction to `typer`
    [here](https://typer.tiangolo.com/tutorial/commands/).
-3. Customize main command alias at `pyproject.toml/[tool.poetry.scripts]`
+3. Customize main command alias at `pyproject.toml/[tool.poetry.scripts]`.
 You can declare more than one script/path in `pyproject.toml`.
 
 4. Apply changes with 
